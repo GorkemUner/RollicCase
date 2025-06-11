@@ -11,7 +11,7 @@ public class RollicCaseSDK : MonoBehaviour
     private static float sessionStartTime;
 
     private Queue<TrackedEvent> savedEventQueue = new Queue<TrackedEvent>();
-    private static string apiUrl = "https://exampleapi.rollic.gs/event";
+    private string apiUrl = "https://exampleapi.rollic.gs/event";
 
     private const string QueueFileName = "eventQueue.json";
 
