@@ -13,7 +13,7 @@ public class Test : MonoBehaviour
 
     private void OnGameButtonClick()
     {
-        Debug.Log("butona tiklandi");
+        Debug.Log("clicked to button");
         RollicCaseSDK.TrackEvent("my button click");
     }
 }
