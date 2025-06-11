@@ -5,10 +5,9 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class RollicCaseSDK : MonoBehaviour
+public class RollicCaseSDK : Singleton<RollicCaseSDK>
 {
-    private static RollicCaseSDK instance;
-    private static float sessionStartTime;
+    private float sessionStartTime;
 
     private Queue<TrackedEvent> savedEventQueue = new Queue<TrackedEvent>();
     private string apiUrl = "https://exampleapi.rollic.gs/event";
@@ -18,22 +17,15 @@ public class RollicCaseSDK : MonoBehaviour
     private float reSendTimeUnsuccesfullSavedEvents = 5f;
     private Coroutine resendUnsuccessfullDataCoroutine;
 
-    public static void Initialize()
+    public void Initialize()
     {
         Debug.Log("Application.persistentDataPath" + Application.persistentDataPath.ToString());
-        if (instance == null)
-        {
-            GameObject go = new GameObject("RollicCaseSDK");
-            instance = go.AddComponent<RollicCaseSDK>();
-            DontDestroyOnLoad(go);
-        }
-
         sessionStartTime = Time.realtimeSinceStartup;
-        instance.LoadQueueFromDisk();
-        instance.TryStartResendCoroutine();
+        LoadQueueFromDisk();
+        TryStartResendCoroutine();
     }
 
-    public static void TrackEvent(string eventName)
+    public void TrackEvent(string eventName)
     {
         float sessionTime = Time.realtimeSinceStartup - sessionStartTime;
 
@@ -43,7 +35,7 @@ public class RollicCaseSDK : MonoBehaviour
             session_time = sessionTime
         };
 
-        instance.StartCoroutine(instance.SendRequest(tracked));
+        StartCoroutine(SendRequest(tracked));
     }
 
     private IEnumerator SendRequest(TrackedEvent track, bool isAlreadySavedData = false)
@@ -68,7 +60,7 @@ public class RollicCaseSDK : MonoBehaviour
             if (isAlreadySavedData)
             {
                 savedEventQueue.Dequeue();
-                instance.SaveQueueToDisk();
+                SaveQueueToDisk();
             }
         }
         else
@@ -100,7 +92,7 @@ public class RollicCaseSDK : MonoBehaviour
         while (savedEventQueue.Count > 0)
         {
             if (Application.internetReachability != NetworkReachability.NotReachable)
-                yield return instance.StartCoroutine(SendRequest(savedEventQueue.Peek(), true));
+                yield return StartCoroutine(SendRequest(savedEventQueue.Peek(), true));
             else
                 yield return new WaitForSeconds(reSendTimeUnsuccesfullSavedEvents);
         }

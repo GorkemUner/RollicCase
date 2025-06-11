@@ -7,13 +7,13 @@ public class Test : MonoBehaviour
 
     void Awake()
     {
-        RollicCaseSDK.Initialize();
+        RollicCaseSDK.Instance.Initialize();
         GameButtonClick.onClick.AddListener(OnGameButtonClick);
     }
 
     private void OnGameButtonClick()
     {
         Debug.Log("clicked to button");
-        RollicCaseSDK.TrackEvent("my button click");
+        RollicCaseSDK.Instance.TrackEvent("my button click");
     }
 }
